@@ -1,4 +1,4 @@
-package com.example.tallytime.tallytime;
+package com.example.tallytime;
 
 import org.junit.Test;
 

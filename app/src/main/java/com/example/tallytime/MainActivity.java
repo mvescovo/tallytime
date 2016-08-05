@@ -1,4 +1,4 @@
-package com.example.tallytime.tallytime;
+package com.example.tallytime;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

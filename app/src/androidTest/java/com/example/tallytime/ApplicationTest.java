@@ -1,4 +1,4 @@
-package com.example.tallytime.tallytime;
+package com.example.tallytime;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
