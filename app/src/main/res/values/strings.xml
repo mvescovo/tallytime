@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">Tally Time</string>
+    <string name="select_calendars">Select calendars</string>
+    <string name="requires_play_services">"This app requires Google Play Services. Please install Google Play Services on your device and relaunch this app."</string>
+    <string name="no_network">No network connection available.</string>
+    <string name="no_results">No results returned.</string>
+    <string name="the_following_error_occured">The following error occurred:\n</string>
+    <string name="request_cancelled">Request cancelled.</string>
+    <string name="get_hours">Get hours</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="select_week">Select week</string>
+    <string name="selected_calendars">Selected calendars:</string>
+    <string name="selected_week">Selected week:</string>
 </resources>
