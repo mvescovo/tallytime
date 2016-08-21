@@ -12,4 +12,5 @@
     <string name="select_week">Select week</string>
     <string name="selected_calendars">Selected calendars:</string>
     <string name="selected_week">Selected week:</string>
+    <string name="add_to_drive">Add to drive</string>
 </resources>

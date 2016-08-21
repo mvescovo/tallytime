@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,54 +9,74 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.tallytime.MainActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <ProgressBar
+        android:layout_centerInParent="true"
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:visibility="gone" />
 
-        <Button
-            android:id="@+id/select_calendars"
-            android:layout_width="wrap_content"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="selectCalendars"
-            android:text="@string/select_calendars" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/selected_calendars"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/selected_calendars" />
+            <Button
+                android:id="@+id/select_calendars"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="selectCalendars"
+                android:text="@string/select_calendars" />
 
-        <Button
-            android:id="@+id/select_week"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="selectWeek"
-            android:text="@string/select_week" />
+            <TextView
+                android:id="@+id/selected_calendars"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/selected_calendars" />
 
-        <TextView
-            android:id="@+id/selected_week"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/selected_week" />
+            <Button
+                android:id="@+id/select_week"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="selectWeek"
+                android:text="@string/select_week" />
 
-        <Button
-            android:id="@+id/get_hours"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="getHours"
-            android:text="@string/get_hours" />
+            <TextView
+                android:id="@+id/selected_week"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/selected_week" />
 
-        <TextView
-            android:id="@+id/output_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
+            <Button
+                android:id="@+id/get_hours"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="getHours"
+                android:text="@string/get_hours" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/output_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
 
-</ScrollView>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:onClick="addToDrive"
+                android:text="@string/add_to_drive" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</RelativeLayout>
