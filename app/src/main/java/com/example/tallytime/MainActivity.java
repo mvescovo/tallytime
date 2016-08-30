@@ -509,7 +509,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 double subTotalHours = 0;
 
                 eventStrings.add(
-                        String.format("%s %s %s", "\nSubject: ", mSelectedCalendars.get(i), "\n"));
+                        String.format("%s %s %s", "Subject: ", mSelectedCalendars.get(i), "\n"));
 
                 int calendarIndex = mCalendars.getIndexOfKey(mSelectedCalendars.get(i));
                 String calendarId = mCalendars.getValue(calendarIndex);
@@ -553,6 +553,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 }
                 eventStrings.add(
                         String.format("%s %s %s %s", "\nTotal hours for ", mSelectedCalendars.get(i), ": ", subTotalHours));
+
+                if ((i + 1) < mSelectedCalendars.size()) {
+                    eventStrings.add("");
+                }
             }
 
             eventStrings.add(String.format("%s %s", "\nTOTAL: ", totalHours));
@@ -575,7 +579,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             if (output == null || output.size() == 0) {
                 mOutputText.setText(R.string.no_results);
             } else {
-                output.add(0, "Timesheet for this week:");
+//                output.add(0, "Timesheet for this week:");
                 mOutputText.setText(TextUtils.join("\n", output));
             }
         }
@@ -648,6 +652,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     public void displaySelectedCalendars() {
         String calendarsToDisplay = "";
         for (int i = 0; i < mSelectedCalendars.size(); i++) {
+            calendarsToDisplay += "- ";
             calendarsToDisplay += mSelectedCalendars.get(i);
             if ((i + 1) < mSelectedCalendars.size()) {
                 calendarsToDisplay += "\n";

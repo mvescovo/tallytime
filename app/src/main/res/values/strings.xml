@@ -13,7 +13,6 @@
     <string name="no_calendars_selected">No calendars selected</string>
     <string name="selected_week">Selected week:</string>
     <string name="add_to_drive">Add to drive</string>
-    <string name="hours_results_title">Hours:</string>
 
     <!--AuthUiActivity-->
     <string name="title_activity_auth">Sign in</string>
