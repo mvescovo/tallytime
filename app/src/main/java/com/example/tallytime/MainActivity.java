@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
+import com.example.tallytime.util.Globals;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -46,6 +47,14 @@ import com.google.api.services.calendar.model.CalendarList;
 import com.google.api.services.calendar.model.CalendarListEntry;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -84,6 +93,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private int mMonth;
     private int mDay;
 
+    // firebase
+    private DatabaseReference mDatabase;
+    private String mUserId;
+
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
@@ -118,11 +131,26 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Firebase database
+        if (!Globals.getInstance().isFirebasePersistenceSet()) {
+            Globals.getInstance().setFirebasePersistenceEnabled();
+        }
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            // User is signed in
+            mUserId = user.getUid();
+        } else {
+            // User is signed out
+            mUserId = "invalidUser";
+        }
+
         mProgress = new ProgressDialog(this);
         mProgress.setMessage("Getting calendar hours...");
         mCalendars = new ArrayMap<>();
         mCalendarNames = new ArrayList<>();
-        mSelectedCalendars = new ArrayList<>();
         mYear = -1;
         mMonth = -1;
         mDay = -1;
@@ -135,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
 
-        getResultsFromApi();
+        getSelectedCalendarsFromFirebase();
     }
 
     /**
@@ -155,6 +183,33 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         } else {
             new MakeRequestTask(mCredential).execute();
         }
+    }
+
+    private void getSelectedCalendarsFromFirebase() {
+        ValueEventListener calendarListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                GenericTypeIndicator<List<String>> t = new GenericTypeIndicator<List<String>>() {};
+                ArrayList<String> calendars = (ArrayList<String>) dataSnapshot.getValue(t);
+
+                if (calendars != null) {
+                    mSelectedCalendars = calendars;
+                    displaySelectedCalendars();
+                } else {
+                    mSelectedCalendars = new ArrayList<>();
+                    displaySelectedCalendars();
+                }
+
+                getResultsFromApi();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting calendars failed, log a message
+                Log.w(TAG, "loadCalendars:onCancelled", databaseError.toException());
+            }
+        };
+        mDatabase.child("selectedCalendars").child(mUserId).addValueEventListener(calendarListener);
     }
 
     /**
@@ -397,6 +452,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
          * @throws IOException
          */
         private List<String> getDataFromApi() throws IOException {
+            // Clear existing lists
+            mCalendars.clear();
+            mCalendarNames.clear();
 
             // Iterate through entries in calendar list
             String pageToken = null;
@@ -421,6 +479,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 Log.i(TAG, "getDataFromApi: date: " + cal.getTime());
                 cal.set(mYear, mMonth, mDay);
                 Log.i(TAG, "getDataFromApi: date: " + cal.getTime());
+            } else {
+                Log.d(TAG, "getDataFromApi: YEAR: " + cal.get(Calendar.YEAR));
+                Log.d(TAG, "getDataFromApi: MONTH: " + cal.get(Calendar.MONTH));
+                Log.d(TAG, "getDataFromApi: DAY: " + cal.get(Calendar.DAY_OF_MONTH));
+                mYear = cal.get(Calendar.YEAR);
+                mMonth = cal.get(Calendar.MONTH);
+                mDay = cal.get(Calendar.DAY_OF_MONTH);
             }
 
             cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
@@ -481,11 +546,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     DateFormat timeInstance = SimpleDateFormat.getTimeInstance(DateFormat.SHORT);
 
                     eventStrings.add(
-                            String.format("%s %s %s %s",
+                            String.format("%s %s %s",
                                     dateInstance.format(start.getValue()) + ", ",
                                     timeInstance.format(start.getValue()) + ", ",
-                                    "hours: " + hours + ", ",
-                                    "activity: " + event.getDescription()));
+                                    hours + ", " + event.getDescription()));
                 }
                 eventStrings.add(
                         String.format("%s %s %s %s", "\nTotal hours for ", mSelectedCalendars.get(i), ": ", subTotalHours));
@@ -507,6 +571,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         @Override
         protected void onPostExecute(List<String> output) {
             mProgress.hide();
+            displaySelectedWeek();
             if (output == null || output.size() == 0) {
                 mOutputText.setText(R.string.no_results);
             } else {
@@ -565,24 +630,34 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     public void onSelectCalendarsDialogPositiveClick(String calendar) {
         // User touched the dialog's positive button
         mSelectedCalendars.add(calendar);
-
-        String calendarsToDisplay = "Selected calendars: \n\n";
-        for (int i = 0; i < mSelectedCalendars.size(); i++) {
-            calendarsToDisplay += mSelectedCalendars.get(i) + "\n";
-        }
-        mSelectedCalendarsTextView.setText(calendarsToDisplay);
     }
 
     @Override
     public void onSelectCalendarsDialogNegativeClick(String calendar) {
         // User touched the dialog's negative button
         mSelectedCalendars.remove(calendar);
+    }
 
-        String calendarsToDisplay = "Selected calendars: \n\n";
+    @Override
+    public void onSelectCalendarsDialogOkClick() {
+        mDatabase.child("selectedCalendars").child(mUserId).setValue(mSelectedCalendars);
+        displaySelectedCalendars();
+    }
+
+
+    public void displaySelectedCalendars() {
+        String calendarsToDisplay = "";
         for (int i = 0; i < mSelectedCalendars.size(); i++) {
-            calendarsToDisplay += mSelectedCalendars.get(i) + "\n";
+            calendarsToDisplay += mSelectedCalendars.get(i);
+            if ((i + 1) < mSelectedCalendars.size()) {
+                calendarsToDisplay += "\n";
+            }
         }
-        mSelectedCalendarsTextView.setText(calendarsToDisplay);
+        if (calendarsToDisplay.contentEquals("")) {
+            mSelectedCalendarsTextView.setText(R.string.no_calendars_selected);
+        } else {
+            mSelectedCalendarsTextView.setText(calendarsToDisplay);
+        }
     }
 
     @Override
@@ -590,29 +665,19 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         mYear = year;
         mMonth = month;
         mDay = day;
+        displaySelectedWeek();
+        getResultsFromApi();
+    }
 
-        String selectedWeek = "Selected week: \n\n" + mDay + "/" + (mMonth + 1) + "/" + mYear;
+    public void displaySelectedWeek() {
+        String selectedWeek = mDay + "/" + (mMonth + 1) + "/" + mYear;
         mSelectedWeekTextView.setText(selectedWeek);
     }
-
-    @Override
-    public void onDatePickerDialogNegativeClick(DatePicker view, int year, int month, int day) {
-
-    }
-
-
-
-
-
-
-
-
 
     /*
     * Drive stuff
     *
     * */
-
     public void addImageToDrive(View view) {
         if (mBitmapToSave == null) {
             // This activity has no UI of its own. Just start the camera.

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "218859932861",
+    "firebase_url": "https://tally-time.firebaseio.com",
+    "project_id": "tally-time",
+    "storage_bucket": "tally-time.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:218859932861:android:6248589b9e8ee525",
+        "android_client_info": {
+          "package_name": "com.example.tallytime"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "218859932861-q7rmhbnuoghernpufu834bb9ntl4gi1j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tallytime",
+            "certificate_hash": "E31D3CA6E3EC041F9E77AEB66D7848E21E0BFC71"
+          }
+        },
+        {
+          "client_id": "218859932861-7smldo8u4tb0mne81fi72f4cqlbqfmk5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8XFydaJb2AvUDkvC8Z8lxLOCjGMcByOo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "218859932861-7smldo8u4tb0mne81fi72f4cqlbqfmk5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

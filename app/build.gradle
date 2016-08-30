@@ -3,7 +3,7 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.0"
+    buildToolsVersion "24.0.2"
 
     defaultConfig {
         applicationId "com.example.tallytime"
@@ -23,9 +23,24 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:24.1.1'
 
+    // Android support libraries
+    compile 'com.android.support:appcompat-v7:24.2.0'
+    compile 'com.android.support:percent:24.2.0'
+
+    // Google play services
     compile 'com.google.android.gms:play-services-auth:9.4.0'
+    compile 'com.google.android.gms:play-services-drive:9.4.0'
+
+    // Firebase UI (Note: this is different from standard firebase)
+    compile 'com.firebaseui:firebase-ui-auth:0.5.1'
+    compile 'com.firebaseui:firebase-ui-database:0.5.1'
+
+    // Butterknife - for getting view references easily
+    compile 'com.jakewharton:butterknife:8.4.0'
+    apt 'com.jakewharton:butterknife-compiler:8.4.0'
+
+
     compile 'pub.devrel:easypermissions:0.1.5'
     compile('com.google.api-client:google-api-client-android:1.22.0') {
         exclude group: 'org.apache.httpcomponents'
@@ -33,9 +48,7 @@ dependencies {
     compile('com.google.apis:google-api-services-calendar:v3-rev205-1.22.0') {
         exclude group: 'org.apache.httpcomponents'
     }
-
-    compile 'com.jakewharton:butterknife:8.2.1'
-    apt 'com.jakewharton:butterknife-compiler:8.2.1'
-
-    compile 'com.google.android.gms:play-services-drive:9.4.0'
 }
+
+// To load the google-services.json file needed for firebase
+apply plugin: 'com.google.gms.google-services'

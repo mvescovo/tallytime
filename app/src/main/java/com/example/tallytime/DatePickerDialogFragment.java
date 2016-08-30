@@ -61,6 +61,5 @@ public class DatePickerDialogFragment extends DialogFragment
      */
     public interface DatePickerDialogListener {
         void onDatePickerDialogPositiveClick(DatePicker view, int year, int month, int day);
-        void onDatePickerDialogNegativeClick(DatePicker view, int year, int month, int day);
     }
 }

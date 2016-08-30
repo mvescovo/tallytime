@@ -81,7 +81,7 @@ public class SelectCalendarsDialogFragment extends DialogFragment {
                     public void onClick(DialogInterface dialog, int id) {
                         // User clicked OK, so save the mSelectedItems results somewhere
                         // or return them to the component that opened the dialog
-
+                        mListener.onSelectCalendarsDialogOkClick();
                     }
                 });
 //                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -116,5 +116,6 @@ public class SelectCalendarsDialogFragment extends DialogFragment {
     public interface SelectCalendarsDialogListener {
         void onSelectCalendarsDialogPositiveClick(String calendar);
         void onSelectCalendarsDialogNegativeClick(String calendar);
+        void onSelectCalendarsDialogOkClick();
     }
 }
