@@ -131,6 +131,15 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addApi(Drive.API)
+                    .addScope(Drive.SCOPE_FILE)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .build();
+        }
+
         // Firebase database
         if (!Globals.getInstance().isFirebasePersistenceSet()) {
             Globals.getInstance().setFirebasePersistenceEnabled();
@@ -692,29 +701,15 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     public void addToDrive(View view) {
-//        String filename = "myfile";
-//        String string = "Hello world!";
-//        FileOutputStream outputStream;
-//
-//        try {
-//            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-//            outputStream.write(string.getBytes());
-//            outputStream.close();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
 
         // Start by creating a new contents, and setting a callback.
         Log.i(TAG, "Creating new contents.");
-//        final Bitmap image = mBitmapToSave;
         Drive.DriveApi.newDriveContents(mGoogleApiClient)
                 .setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
 
                     @Override
                     public void onResult(DriveApi.DriveContentsResult result) {
-                        // If the operation was not successful, we cannot do anything
-                        // and must
-                        // fail.
+                        // If the operation was not successful, we cannot do anything and must fail.
                         if (!result.getStatus().isSuccess()) {
                             Log.i(TAG, "Failed to create new contents.");
                             return;
@@ -723,9 +718,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                         Log.i(TAG, "New contents created.");
                         // Get an output stream for the contents.
                         OutputStream outputStream = result.getDriveContents().getOutputStream();
-                        // Write the bitmap data from it.
-//                        ByteArrayOutputStream bitmapStream = new ByteArrayOutputStream();
-//                        image.compress(Bitmap.CompressFormat.PNG, 100, bitmapStream);
 
                         try {
                             outputStream.write(mOutputText.getText().toString().getBytes());
@@ -834,22 +826,15 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (mGoogleApiClient == null) {
-            // Create the API client and bind it to an instance variable.
-            // We use this instance as the callback for connection and connection
-            // failures.
-            // Since no account name is passed, the user is prompted to choose.
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addApi(Drive.API)
-                    .addScope(Drive.SCOPE_FILE)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .build();
-        }
-        // Connect the client. Once connected, the camera is launched.
+    protected void onStart() {
+        super.onStart();
         mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mGoogleApiClient.disconnect();
     }
 
     @Override
